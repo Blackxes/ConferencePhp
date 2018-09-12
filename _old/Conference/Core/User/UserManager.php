@@ -2,27 +2,35 @@
 
 //_____________________________________________________________________________________________
 /**********************************************************************************************
- * 
- * .. and the story begins ..
- * 
- * @author: Alexander Bassov
- * 
+
+	user management
+
+	@Author: Alexander Bassov
+	@Email: blackxes@gmx.de
+	@Github: https://www.github.com/Blackxes
+
 /*********************************************************************************************/
 
-require_once( "./bootstrap.php" );
+namespace Conference\Core;
 
 //_____________________________________________________________________________________________
-	// load and initialize system
-	\Conference\Core\Bootstrap\Bootstrap::Init();
-
-	// handle incoming request
-	$request = \Conference::service( "requestHandler" )->handleRequest();
-
-	// get response 
-	$response = \Conference::service( "router" )->parseRequest( $request );
+class UserManager {
 	
-	// parse response through the renderer and display output
-	\Conference::service( "renderer" )->render( $response );
+	private $user;
+
+	//_________________________________________________________________________________________
+	public function __construct() {
+			
+		$this->user = null;
+	}
+
+	//_________________________________________________________________________________________
+	/**
+	 * 
+	 */
+
+
+}
 
 //_____________________________________________________________________________________________
 //

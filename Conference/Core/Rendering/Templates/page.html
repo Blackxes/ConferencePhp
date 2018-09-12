@@ -1,0 +1,52 @@
+<!-- default page structure -->
+###CONREN_ROOT###
+<!DOCTYPE html>
+<html>
+	<head>
+
+		<!-- header elements -->
+		{{ foreach: elements }}
+		{{ templateSelect: element }}
+		{{ foreach end: elements }}
+
+		<!-- title -->
+		<title>{{ webpage-title }}</title>
+
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+		<title>{{ webpage-title }}</title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+		<script src="main.js"></script>
+	</head>
+	<body></body>
+</html>
+###CONREN_ROOT###
+
+<!-- the elements attribute list -->
+###CONREN_ATTRIBUTE_LIST###
+{{ foreach: attributes }}
+{{ attribute }}="{{ value }}"
+{{ foreach end: attributes }}
+###CONREN_ATTRIBUTE_LIST###
+
+<!-- meta tag element -->
+###CONREN_ELEMENT_METATAG###
+{{ foreach: meta }}
+<meta {{ name }}="{{ nvalue }}" {{ content }}="{{ cvalue }}">
+{{ foreach end: meta }}
+###CONREN_ELEMENT_METATAG###
+
+<!-- stylesheets -->
+###CONREN_ELEMENT_STYLES###
+{{ foreach: styles }}
+<link rel="stylesheet" type="text/css" href="{{ source }}">
+{{ foreach end: styles }}
+###CONREN_ELEMENT_STYLES###
+
+<!-- script element -->
+###CONREN_ELEMENT_SCRIPT###
+<script {{ case: source }}src="{{ source }}"{{ case end: source }}>{{ content }}</script>
+###CONREN_ELEMENT_SCRIPT###

@@ -1,0 +1,47 @@
+<!-- form base -->
+###BD_FORM_BASE###
+<form {{ template: html_attribute_list }}>
+	{{ foreach: items }}
+	<div {{ template: html_attribute_list }}>
+		{{ foreach: fields }}
+		{{ templateSelect: field }}
+		{{ foreach end: fields }}
+	</div>
+	{{ foreach end: items }}
+</form>
+###BD_FORM_BASE###
+
+<!-- form field label -->
+###BD_FORM_FIELD_LABEL###
+<div class="field-label">
+	<label {{ template: html_attribute_list }}>{{ label }}</label>
+</div>
+###BD_FORM_FIELD_LABEL###
+
+<!-- form field - type description -->
+###BD_FORM_FIELD_DESCRIPTION###
+<p {{ template: html_attribute_list }}>{{ description }}</p>
+###BD_FORM_FIELD_DESCRIPTION###
+
+<!-- form field - type input -->
+###BD_FORM_FIELD_INPUT###
+{{ foreach: inputs }}
+<input {{ template: html_attribute_list }} />
+{{ foreach end: inputs }}
+###BD_FORM_FIELD_INPUT###
+
+<!-- form field - type select -->
+###BD_FORM_FIELD_SELECT###
+<select {{ template: html_attribute_list }}>
+	{{ foreach: options }}
+	<option {{ template: html_attribute_list }}>{{ label }}</option>
+	{{ foreach end: options }}
+</select>
+###BD_FORM_FIELD_SELECT###
+
+<!-- elements attribute list -->
+###HTML_ATTRIBUTE_LIST###
+{{ foreach: attributes }}
+{{ attribute }}="{{ value }}"
+{{ foreach end: attributes }}
+###HTML_ATTRIBUTE_LIST###

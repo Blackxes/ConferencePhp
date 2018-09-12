@@ -1,0 +1,18 @@
+<!-- menu -->
+###MENU###
+<ul class="menu main-menu">
+{{ foreach: menu-items }}
+	<li class="menu-item" data-active="{{ is-active }}"><a href="{{ link }}">{{ label }}</a></li>
+{{ foreach end: menu-items }}
+</ul>
+###MENU###
+
+<!-- breadcrumbs -->
+###MENU###
+<ul class="menu breadcrumbs">
+{{ foreach: menu-items }}
+	<li class="menu-item" data-active="{{ is-active }}"><a href="{{ link }}">{{ label }}</a></li>
+{{ foreach end: menu-items }}
+</ul>
+###MENU###
+

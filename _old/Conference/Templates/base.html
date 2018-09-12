@@ -1,0 +1,49 @@
+<!-- page base template -->
+###BASE###
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+	<title>{{ title }}</title>
+
+	{{ foreach: styles }}
+		<link rel="stylesheet" href="{{ path }}" type="text/css">
+	{{ foreach end: styles }}
+</head>
+<body id="{{ hp-template }}">
+	{{ template: header }}
+	{{ template: content }}
+	{{ template: footer }}
+
+	{{ foreach: scripts }}
+	<script src="{{ path }}"></script>
+	{{ foreach end: scripts }}
+</body>
+</html>
+###BASE###
+
+<!-- header template -->
+###HEADER###
+<header id="header">
+	{{ template: main_menu }}
+</header>
+###HEADER###
+
+<!-- main content template -->
+###CONTENT###
+<div id="content" class="{{ hp-template }}">
+	<h1>{{ page-title }}</h1>
+	{{ case: message }}
+		<p class="log {{ message-type }}">{{ message }}</p>
+	{{ case end: message }}
+	{{ content }}
+</div>
+###CONTENT###
+
+<!-- footer template -->
+###FOOTER###
+<div id="footer"></div>
+###FOOTER###
