@@ -11,6 +11,9 @@
 
 namespace Templax\Source;
 
+use \Templax\Source\Models;
+use \Templax\Source\Classes;
+
 //_____________________________________________________________________________________________
 class RuleParser {
 
@@ -26,7 +29,14 @@ class RuleParser {
 	 * 
 	 * @var array
 	 */
-	public $hooks;
+	private $hooks;
+
+	/**
+	 * describes the initialization state of the parser
+	 * 
+	 * @var boolean
+	 */
+	private $initialized;
 
 	/**
 	 * internal rule iterator
@@ -41,8 +51,83 @@ class RuleParser {
 	 */
 	public function __construct() {
 
-		$this->hooks = array();
+		$this->hooks = new Classes\ParameterBag();
 		$this->baseOptions = $GLOBALS["Templax"]["Defaults"]["Rules"]["BaseOptions"];
+	}
+	
+	/**
+	 * this returns the value of a hook but respects the context of the request
+	 * say we have this rule {{ foreach: fruits }}..{{ foreach end: fruits }}
+	 * 
+	 * this rule has 3 level of contexts. First is the whole fruits command.
+	 * Second is the item and the third the markup behind the item.
+	 * 
+	 * This function provides hook access to the 2 level because this is
+	 * where the command is defined. The rule parser cant access this level naturally
+	 * because it is not a rule.
+	 * Its a step inbetween where the id of the item is defined.
+	 * Such as 0 as an index or a given id for the markup from the user.
+	 * 
+	 * In order to be able to overwrite the markup as a whole this function
+	 * check for that hook signature and returns its result.
+	 * 
+	 * @param \Templax\Source\Models\Query $query - current query
+	 * @param string $contextId - the top level command context id
+	 * 	for example the index "0" in a foreach markup
+	 * @param mixed &$backup - this value is returned when no hook is found
+	 * 	because the hook might contain any value there is no way to check for null
+	 * 	or false therefore this backup
+	 * 
+	 * @return mixed - either the hook or the given value
+	 * 
+	 */
+	public function getHookValueFromCommandContext( Models\Query $query, string $contextId, $backup ) {
+		
+		// get command signature ..
+		$signature = $query->getSignature( $query->get("process"), null, $contextId );
+		
+		// when exist return hook value
+		return ( $this->hasHook($signature) ) ? $this->getHook( $signature ) : $backup;
+	}
+
+	/**
+	 * returns the requested hook
+	 * 
+	 * @return mixed|null - null when hook does not exists
+	 */
+	public function getHook( string $signature ) {
+
+		return $this->hooks[ $signature ];
+	}
+
+	/**
+	 * returns all hooks
+	 * 
+	 * @return array
+	 */
+	public function getHooks() {
+
+		return $this->hooks;
+	}
+
+	/**
+	 * returns the rule iterator
+	 * 
+	 * @return int
+	 */
+	public function getRuleIterator() {
+
+		return self::$rIterator;
+	}
+
+	/**
+	 * returns the existance of a hook as boolean
+	 * 
+	 * @return boolean - true when exists else false
+	 */
+	public function hasHook( string $signature ) {
+
+		return isset( $this->hooks[$signature] );
 	}
 
 	/**
@@ -54,104 +139,71 @@ class RuleParser {
 	 * @return \Templax\Source\Models\Rule
 	 */
 	public function parse( Models\Process $process, string $rawRule ) {
-
+		
+		// extract value from raw rule
 		$config = $GLOBALS["Templax"]["ExtractionRegex"];
 		
-		preg_match( $config["extractRequest"], $rawRule, $requestMatch );
-		preg_match( $config["extractKey"], $rawRule, $keyMatch );
-		
-		$rule = new Models\Rule( ++self::$rIterator, $rawRule, $requestMatch[1], $keyMatch[1] );
+		preg_match( $config["ExtractRequest"], $rawRule, $requestMatch );
+		preg_match( $config["ExtractKey"], $rawRule, $keyMatch );
 
-		// the prio key defines wether the key or the request shall be taken to gather the value from the markup
-		// when a regular marker is defined the prio key is the request
-		// but when a command is defined the key is the prio key
-		$rule->prioKey = ( $keyMatch ) ? $keyMatch[1] : $requestMatch[1];
-		
-		// the value from the marker for the current rule
-		$requestValue = $process->queryMarkup[ $rule->prioKey ];
-		$ruleOptions = array();
+		// initial rule
+		$rule = new Models\Rule(
+			self::$rIterator++, $rawRule,
+			$requestMatch[1], $keyMatch[1],
+			$process->all("markup"), $process->all("options")
+		);
 
-		// when the value contains more than a simple value
-		if ( is_array($requestValue) ) {
+		// when value an array parse its configuration
+		// this value possibly get overwritten when the current value
+		// in an array and contains the "value" key
+		$value = $rule->get("value");
 
-			// get the options for the this rule
-			if ( isset($markupValue["_options"]) && is_array($markupValue["_options"]) )
-				$ruleOptions = $markupValue["_options"];
+		// parse the config when array
+		if ( is_array($value) ) {
 
-			// get the actual value for this rule
-			// and overwrite the request value
-			//
-			// This HAS to be the last operation in this scope
-			// because the actual request array will be overwritten with the value
-			if ( isset($markupValue["value"]) )
-				$requestValue = $requestValue["value"];
+			// extract options
+			if ( isset($value["_options"]) )
+				$rule->merge( "options", (array) $markupValue["_options"] );
+			
+			// define the value
+			if ( isset($value["value"]) )
+				$value = $value["value"];
 		}
-
-		// resolve possible callables within given values
-		//
-		// the prio list for everything that is overwritable is the following
-		// templax -> user -> rule
-		//
-		$rule->options = $this->resolveValues(array_merge(
-			$this->baseOptions,
-			$process->options,
-			$ruleOptions
-		));
-
-		// build the rule signature
-		$signature = "";
-
-		// when its a sub template than include the parent as a selector
-		if ( $process->template->isSub )
-			$signature .= $process->parent->query->prioKey . "_";
 		
-		$signature .= $process->template->id . "_";
-		$signature .= $rule->prioKey;
+		// apply base values
+		$rule->rMerge("options", Classes\Miscellaneous::resolveValues($this->baseOptions) );
 
-		$rule->signature = $signature;
-
-		// check for hooks
-		$rule->value = ( isset($this->hooks[$rule->signature]) )
-			? $this->resolveValues( $this->hooks[$rule->signature] )
-			: $this->resolveValues( $requestValue );
-
-		// command value
-		$rule->commandValue = $this->resolveValues( $process->queryMarkup["{$rule->request}-{$rule->key}"] );
+		// check hooks
+		if ( isset($this->hooks[$rule->getSignature($process)]) )
+			$rule->set("value", Classes\Miscellaneous::resolveValues($this->hooks[$rule->getSignature($process)]) );
 
 		return $rule;
 	}
 
 	/**
-	 * resolve values into actual values
-	 * the value can be callable and this function resolve the value out of it
+	 * shuts the parser down and resets everything
 	 * 
-	 * @param mixed $values - the values that shall be resolved
-	 * 
-	 * @return mixed
+	 * @return boolean - true on success otherwise false
 	 */
-	private function resolveValues( $values ) {
+	public function shutdown() {
 
-		if ( empty($values) )
-			return $values;
-		
-		if ( !is_array($values) )
-			$values = array( "__value" => $values );
+		$this->hooks = array();
 
-		foreach( $values as $option => $value )
-			if ( is_callable($value) )
-				$values[$option] = $value();
-
-		return ( isset($values["__value"]) ) ? $values["__value"] : $values;
+		return true;
 	}
 
 	/**
-	 * returns the rule iterator
+	 * prepares the rule parser for a template processing runs
 	 * 
-	 * @return int
+	 * @param array $hooks - the hooks
+	 * 
+	 * @return boolean
 	 */
-	public function getRuleIterator() {
+	public function start( array $hooks = array() )  {
 
-		return self::$rIterator;
+		$this->hooks = $hooks;
+
+		return true;
 	}
 }
 

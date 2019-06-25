@@ -1,0 +1,156 @@
+<!-- default page structure -->
+<conren_root>
+<!DOCTYPE html5 {{ lang }}>
+<html>
+	<head>
+		<!-- header elements -->
+		{{ foreach: head }}
+			{{ templateSelect: template }}
+		{{ /foreach: head }}
+	</head>
+	<body>
+
+		<!-- main app wrap -->
+		<div id="app" class="app">
+			<!-- page top -->
+			{{ foreach: pre-page-top }}
+				{{ templateSelect: template }}
+			{{ /foreach: pre-page-top }}
+			
+			<div id="page-top-wrap" class="page-top-wrap container-box fullreset">
+				{{ foreach: pre-top }}
+					{{ templateSelect: template }}
+				{{ /foreach: pre-top }}
+				<div id="page-top" class="page-top container-10-5 grid grid-3 align-items">
+				{{ foreach: page-top }}
+					{{ templateSelect: template }}
+				{{ /foreach: page-top }}
+				</div>
+				{{ foreach: post-top }}
+					{{ templateSelect: template }}
+				{{ /foreach: post-top }}
+			</div>
+
+			{{ foreach: post-page-top }}
+				{{ templateSelect: template }}
+			{{ /foreach: post-page-top }}
+
+			<!-- page begin -->
+			{{ foreach: pre-page }}
+				{{ templateSelect: template }}
+			{{ /foreach: pre-page }}
+			<div id="page" class="page">
+				<!-- top content -->
+				{{ foreach: pre-top-content }}
+					{{ templateSelect: template }}
+				{{ /foreach: pre-top-content }}
+				<div id="top-content" class="top-content">
+					{{ foreach: top-content }}
+						{{ templateSelect: template }}
+					{{ /foreach: top-content }}
+				</div>
+
+				{{ foreach: post-top-content }}
+					{{ templateSelect: template }}
+				{{ /foreach: post-top-content }}
+							
+				<!-- page title -->
+				{{ case: page-title }}
+				<div class="container-space-40 title-wrap center">
+					<h1>{{ page-title }}</h1>
+				</div>
+				{{ /case: page-title }}
+
+				<!-- content wrap -->
+				{{ foreach: pre-content-wrap }}
+					{{ templateSelect: template }}
+				{{ /foreach: pre-content-wrap }}
+				<div id="content-wrap" class="content-wrap grid">
+					<!-- side menu -->
+					{{ foreach: pre-side-menu }}
+						{{ templateSelect: template }}
+					{{ /foreach: pre-side-menu }}
+					<div id="side-menu" class="side-menu">
+						{{ foreach: side-menu }}
+							{{ templateSelect: template }}
+						{{ /foreach: side-menu }}
+					</div>
+					{{ foreach: post-side-menu }}
+						{{ templateSelect: template }}
+					{{ /foreach: post-side-menu }}
+
+					<!-- content -->
+					{{ foreach: pre-content }}
+						{{ templateSelect: template }}
+					{{ /foreach: pre-content }}
+					<div id="content" class="content flex-grow-1">
+						{{ foreach: content }}
+							{{ templateSelect: template }}
+						{{ /foreach: content }}
+					</div>
+					{{ foreach: post-content }}
+						{{ templateSelect: template }}
+					{{ /foreach: post-content }}
+
+				</div>
+				{{ foreach: post-content-wrap }}
+					{{ templateSelect: template }}
+				{{ /foreach: post-content-wrap }}
+
+			</div>
+			{{ foreach: post-page }}
+				{{ templateSelect: template }}
+			{{ /foreach: post-page }}
+			
+			<!-- footer -->
+			{{ foreach: pre-footer }}
+				{{ templateSelect: template }}
+			{{ /foreach: pre-footer }}
+
+			<div id="footer" class="footer">
+			{{ foreach: footer }}
+				{{ templateSelect: template }}
+			{{ /foreach: footer }}
+			</div>
+			
+			{{ foreach: post-footer }}
+				{{ templateSelect: template }}
+			{{ /foreach: post-footer }}
+			
+			<template id="tx-templates">
+			{{ foreach: templates }}
+				<template id="{{ id }}">
+				{{ templateSelect: template }}
+				</template>
+			{{ /foreach: templates }}
+			</template>
+
+			<!-- scripts -->
+			{{ foreach: scripts }}
+				{{ templateSelect: template }}
+			{{ /foreach: scripts }}
+		</div>
+	</body>
+</html>
+</conren_root>
+
+<!-- login root -->
+<!-- default page structure -->
+<conren_root_login>
+<!DOCTYPE html5 {{ lang }}>
+<html>
+	<head>
+		<!-- header elements -->
+		{{ foreach: head }}
+			{{ templateSelect: template }}
+		{{ /foreach: head }}
+	</head>
+	<body>
+		<div id="app" class="app">
+			{{ foreach: content }}
+				{{ templateSelect: template }}
+			{{ /foreach: content }}
+		</div>
+	</body>
+</html>
+</conren_root_login>

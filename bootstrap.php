@@ -1,6 +1,4 @@
 <?php
-
-//_____________________________________________________________________________________________
 /**********************************************************************************************
  * 
  * constants and includes for the system to be able to boot and start initializing
@@ -9,11 +7,8 @@
  * 
 /*********************************************************************************************/
 
-// Root directory
-define( "CONREN_ROOT", __DIR__, TRUE );
+# root directory constant
+const C7_ROOT = __DIR__;
 
-// includes
-require_once( CONREN_ROOT . "/autoload.php" );
-
-//_____________________________________________________________________________________________
-//
+# autoloader
+require_once( C7_ROOT . "/autoload.php" );

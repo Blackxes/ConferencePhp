@@ -11,112 +11,45 @@
 
 namespace Conference\Core\User;
 
+use \Conference\Core\Classes;
+
 //_____________________________________________________________________________________________
-class User {
-
-	/**
-	 * uid of the user
-	 * 
-	 * @var int|null
-	 */
-	public $uid;
-
-	/**
-	 * creation date of the user
-	 * 
-	 * @var int|null
-	 */
-	public $crdate;
-
-	/**
-	 * last time this user has been updated
-	 * 
-	 * @var int|null
-	 */
-	public $updated;
-
-	/**
-	 * describes if this user is active
-	 * active user are visible in the system but not able to log in or interact
-	 * 
-	 * @var boolean|null
-	 */
-	public $active;
-
-	/**
-	 * describes if this user is hidden
-	 * hidden user are invisible to the system and not accessable
-	 * 
-	 * @var boolean|null
-	 */
-	public $hidden;
-
-	/**
-	 * the salt hashed password
-	 * 
-	 * @var string|null
-	 */
-	public $password;
-
-	/**
-	 * firstname
-	 * 
-	 * @var string|null
-	 */
-	public $firstname;
-
-	/**
-	 * lastname
-	 * 
-	 * @var string|null
-	 */
-	public $lastname;
-
-	/**
-	 * email address
-	 * 
-	 * @var string|null
-	 */
-	public $email;
-
-	/**
-	 * describes wether the current user is a super user
-	 * 
-	 * @var boolean|null
-	 */
-	public $isSuper;
-
-	/**
-	 * describes wether this user is anonymous / a guest
-	 * 
-	 * @var boolean
-	 */
-	public $anonymous;
+class User extends Classes\ParameterBag {
 
 	/**
 	 * construction
+	 * 
+	 * @param array $params - user parameter
+	 * @param boolean $anonymous - guest or logged in user
 	 */
-	public function __construct() {
+	public function __construct( array $params = array(), bool $anonymous = null ) {
+		
+		parent::__construct();
 
-		$this->anonymous = true;
+		// rMerge to write $params at first line and not at the end - because i can :)
+		$this->rMerge( null, $params, [
+			"uid" => null,
+			"first_name" => "",
+			"last_name" => "",
+			"password" => "",
+			"email" => "",
+			"remember_token" => "",
+			"super_user" => false,
+			"anonymous" => true,
+			"roles" => null
+		]);
+
+		# try to define anonymous when not defined
+		if ( is_null($anonymous) && !$this->isNull("uid") )
+			$this->set( "anonymous", false );
 	}
 
 	/**
-	 * defines this object by the given object and returns $this
-	 * properties have to be public
-	 * 
-	 * @return $this
+	 * returns users roles
 	 */
-	public function defineByObject( $obj ) {
+	public function roles() {
 
-		foreach( $obj as $key => $value )
-			if ( property_exists($this, $key) )
-				$this->$key = $value;
-			
-		// anonymity
-		$this->anonymous = is_null($uid);
-
-		return $this;
+		return \Conference::service( "roles.manager" )->userRoles( (int) $this->get("uid") );
 	}
 }
 

@@ -1,0 +1,37 @@
+<!-- category children -->
+<category_side_menu_category_list>
+<ul class="listing listing-staircase dropdown">
+	{{ foreach: categories }}
+	<li class="list-item dropdown-container category category-{{ uid }} category-children-container">
+		<div class="grid grid-inline grid-auto grid-gap grid-2 align-items">
+			<a class="link-passive" href="{{ link }}">
+				<h3 class="list-item-title text-regular">{{ name }}</h3>
+			</a>
+			{{ case: has_children }}
+			<i class="dropdown-trigger fas fa-angle-right category-children-trigger"></i>
+			{{ /case: has_children }}
+		</div>
+		<div class="category-children dropdown" data-category-root="{{ uid }}"></div>
+	</li>
+	{{ /foreach: categories }}
+</ul>
+</category_side_menu_category_list>
+
+<!-- property products -->
+<property_details>
+<div class="list-content property-details-holder dropdown">
+	<div class="list-header">
+		<p class="list-title">Produkte</p>
+	</div>
+	<ul class="listing listing-decent property-products">
+		{{ foreach: products }}
+		<li class="container-box-light">
+			<a class="js_container-ratio" data-container-ratio="1-1" data-container-ratio-type="grid" href="product/edit/{{ uid }}">
+				<p>{{ article_name }}</p>
+				<p>{{ value }}</p>
+			</a>
+		</li>
+		{{ /foreach: products }}
+	</ul>
+</div>
+</property_details>

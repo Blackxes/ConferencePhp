@@ -1,7 +1,0 @@
-###LOGFILE_LOG_LISTING###
-<ul class="logs-container list">
-	{{ foreach: logs }}
-	<li class="log-item log-{{ status }} list-item {{ type }}">{{ message }} {{ case: code }}| <span>Statuscode: {{ code }}</span>{{ case end: code }}</li>
-	{{ foreach end: logs }}
-</ul>
-###LOGFILE_LOG_LISTING###

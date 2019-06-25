@@ -3,62 +3,99 @@
 //_____________________________________________________________________________________________
 /**********************************************************************************************
  * 
- * configurations
+ * templax configurations
  * 
  * @author: Alexander Bassov
  * 
 /*********************************************************************************************/
 
-// no namespace .. *sad*^
+// general configurations
+$GLOBALS["Templax"]["General"]["Version"] = "4.0.0";
 
-//_____________________________________________________________________________________________
-// generals configurations
-$GLOBALS["Templax"]["General"] = array(
-	"version" => "2.0.1"
-);
-
-//_____________________________________________________________________________________________
-// debugging stuff
+// defaults / subsitution
 $GLOBALS["Templax"]["Defaults"] = array(
+
+	
+	// rules defaults
 	"Rules" => array(
+		
+		// base options for rules
 		"BaseOptions" => array(
-			"render" => true
+
+			// describes wether this rule will be rendered or not
+			"render" => true,
+			
+			// defines wether the following template shall be parsed or not
+			"parse" => true
 		)
 	),
+
+	// process defaults
 	"Process" => array(
+
+		// base options for processes
 		"BaseOptions" => array(
-			"render" => true
+
+			// describes wether the resulting content of this process shall be displayed
+			// synonym could be "process" to define wether this template should process or not
+			"render" => true,
+
+			// callable in which the query built based on the current processing rule in the template
+			// is passed. This callable needs to return a \Templax\Source\Models\Response
+			//
+			// when null then the \Templax\Source\QueryParser will process the query
+			//
+			// @see \Templax\Source\Models\Response
+			//
+			"callback" => null,
+
+			// defines wether the following template shall be parsed or not
+			"parse" => true
 		)
-	),
-	"BaseMarkup" => array(),
-	"BaseOptions" => array(
-		"render" => true,
-		"cache" => true
 	)
 );
 
-//_____________________________________________________________________________________________
-// dependencies
-// *removed*
+/**********************************************************************************************
+ * 
+ * Extracting belonging configurations
+ * dont change anything except you know what you are doing!
+ * 
+ * If you got a better solution for the regex mail me - ill test it and improve it.
+ * 
+/*********************************************************************************************/
 
-//_____________________________________________________________________________________________
-// regex to extract several string
+// regex to extract several strings
 $GLOBALS["Templax"]["ExtractionRegex"] = array(
-	"extractRule" => "/{{\s*(?:[^<>])*?\s*}}/",
-	"extractRequest" => "/([\w-]+)(?:[\w\s:-]+)?/",
-	"extractKey" => "/{{\s*[\w-]+\s*:\s*([\w-]+)*?\s*}}/"
+
+	// extract X regardless of spaces
+	// String: "{{ X }}"
+	//
+	"ExtractRule" => "/{{\s*(?:[^<>])*?\s*}}/",
+
+	// extract X regardless of spaces
+	// String: "X[: Y]"
+	"ExtractRequest" => "/([\w-]+)(?:[\w\s:-]+)?/",
+
+	// extract X regardless of spaces
+	// String: "[Y]: X"
+	//
+	"ExtractKey" => "/:\s*([\w-]+)?/",
+
+	// extract X regardless of spaces based on the given query
+	// String: "rawRule X {{ queryRequest end: queryKey }}"
+	//
+	"ExtractArea" => function( \Templax\Source\Models\Query $query, string $customKey = null ) {
+
+		// custom key has higher prio
+		// building the range as array to avoid checking for the custom key multiple times
+		//
+		$range = ( !is_null($customKey) )
+			? array( "start" => "{{\s*{$key}\s*}}", "request" => $customKey, "key" => $customKey )
+			: array( "start" => $query->get("rawRule"), "request" => $query->get("request"), "key" => $query->get("key") );
+		
+		return "/{$range["start"]}(.*?){{\s*\/{$range["request"]}\s*:\s*{$range["key"]}\s*}}/";
+	}
 );
-
-// for better look at the regex
-$GLOBALS["Templax"]["ExtractionRegex"]["extractArea"] = function( \Templax\Source\Models\Query $query ) {
-
-	// extract everything in between
-	// $query->rawRule
-	// and
-	// {{$query->request end: $query->key}}
-	// 
-	return "/{$query->rawRule}(.*){{\s*{$query->request}\s+end\s*:\s*{$query->key}\s*}}/";
-};
 
 //_____________________________________________________________________________________________
 // 

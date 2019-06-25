@@ -1,0 +1,94 @@
+<service_list>
+<div class="service-list">
+	<a class="btn btn-success container-nomargin far fa-plus-square" href="{{ conren_route_admin_service_register }}">New</a>
+	<hr>
+	<ul class="listing listing-arranged">
+		{{ foreach: services }}
+		<li class="actions-container container-hover list-item">
+			<a class="text-code list-content grid grid-2 link-passive text-nostyle" href="{{ conren_domain }}/admin/service/edit/{{ uid }}">
+				<p>{{ key }}</p>
+				<p>{{ source }}</p>
+			</a>
+			<div class="actions actions-overlay container-hide container-center-abs-v">
+				<a class="action container-nomargin btn btn-error far fa-trash-alt" href="{{ conren_domain }}/admin/service/delete/{{ uid }}"></a>
+			</div>
+		</li>
+		{{ /foreach: services }}
+	</ul>
+</div>
+</service_list>
+
+<service_edit_form>
+<form action="{{ conren_route_admin_service_update }}" class="form fullw" method="post">
+	
+	<!-- meta -->
+	<input type="hidden" name="service_update" value="1">
+	<input type="hidden" name="service_id" value="{{ uid }}">
+
+	<!-- fields -->
+	<div class="js_container-ratio container-nomargin-wrap container-space-20 grid-gap" data-container-ratio="1-3" data-container-ratio-type="grid">
+		<div class="container-ratio form-container">
+			<div class="form-holder">
+				<label for="form-key">Service key</label>
+				<p>Name which is used to request the service</p>
+			</div>
+			<div class="form-input">
+				<input id="form-key" name="key" type="text" value="{{ key }}">
+			</div>
+		</div>
+		<div class="container-ratio form-container">
+			<div class="form-holder">
+				<label for="form-source">Service class</label>
+				<p>Source of service</p>
+			</div>
+			<div class="form-input">
+				<input id="form-source" name="source" type="text" value="{{ source }}">
+			</div>
+		</div>
+	</div>
+	<div class="actions">
+		<a class="action btn btn-info far fa-caret-square-left" href="{{ conren_route_admin_services }}">Back</a>
+		<button class="action btn btn-success far fa-save">Save</button>
+	</div>
+</form>
+</service_edit_form>
+
+<service_register_form>
+<a class="action btn btn-info container-nomargin far fa-caret-square-left" href="{{ conren_route_admin_services }}">Back</a>
+<hr>
+<form action="{{ conren_route_admin_service_register }}" class="form fullw" method="post">
+
+	<!-- meta -->
+	<input type="hidden" name="service_register" value="1">
+
+	<!-- fields -->
+	<div class="js_container-ratio container-nomargin-wrap container-space-20 grid-gap" data-container-ratio="1-3" data-container-ratio-type="grid">
+		<div class="container-ratio form-container">
+			<div class="form-holder">
+				<label for="form-key">Service key</label>
+				<p>Name which is used to request the service</p>
+			</div>
+			<div class="form-input required">
+				<input id="form-key" name="key" type="text" required>
+			</div>
+		</div>
+		<div class="container-ratio form-container">
+			<div class="form-holder">
+				<label for="form-source">Service class</label>
+				<p>Source of service</p>
+			</div>
+			<div class="form-input required">
+				<input id="source" list="source-list" name="source" required>
+				<datalist id="source-list">
+				{{ foreach: sources }}
+					<option value="{{ source }}">{{ key }}</option>
+				{{ /foreach: sources }}
+				</datalist>
+			</div>
+		</div>
+	</div>
+	<div class="actions">
+		<button class="action btn btn-success far fa-save">Register</button>
+	</div>
+</form>
+</service_register_form>

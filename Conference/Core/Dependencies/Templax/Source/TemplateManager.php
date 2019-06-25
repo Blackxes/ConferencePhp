@@ -13,225 +13,236 @@ namespace Templax\Source;
 
 use \Templax\Source\Models;
 
+require_once( TEMPLAX_ROOT . "/Source/Classes/ParameterBag.php" );
 require_once( TEMPLAX_ROOT . "/Source/Models/Template.php" );
 
 //_____________________________________________________________________________________________
-class TemplateManager {
+class TemplateManager extends Classes\ParameterBag {
 
 	/**
-	 * registered templates
+	 * stores file content
+	 * 
+	 * @var Classes\ParameterBag
+	 */
+	private $fileCache;
+
+	/**
+	 * options
+	 * 
+	 * Todo: implement rest options
+	 * 
+	 * [Not Implemented] @silent - errors are suppressed and wont be thrown nor displayed 
+	 * @dir - default directory where templates may lie
 	 * 
 	 * @var array
 	 */
-	private $templates = array();
-
-	/**
-	 * stores the files content as $fileName => $content
-	 * files can contain multiple templates and to avoid streaming the same file all over again
-	 * this precious member stores their content
-	 * 
-	 * @var array
-	 */
-	private $cache = array();
+	private $options;
 
 	/**
 	 * construction
 	 * 
-	 * @param array $templates - template that shall be registered initially
-	 * 	supports the following 2 methods
-	 * 	the one template file
-	 * 		$templateid => $fileName
-	 * 
-	 * 	multiple templates in one file
-	 * 		array(
-	 * 			"template_id" => array(
-	 * 				"file" => "path/To/File/Including/FileName/And.Extension"
-	 * 				"marker" => ###MARKER_THAT_SURROUNDS_TEMPLATE###
-	 * 			),
-	 * 			etc.
-	 * 		)
+	 * @param array $templates - initial templates
+	 * @param array $options - options
 	 */
-	public function __construct( array $templates = array() ) {
-		
-		// initialize templates
-		if ( !empty($templates) )
-			$this->registerTemplateSet($templates);
+	public function __construct( array $templates = [], array $options = [] ) {
+
+		parent::__construct();
+
+		$this->fileCache = new Classes\ParameterBag();
+		$this->options = new Classes\ParameterBag([
+			"dir" => "",
+			"file" => "",
+			"prefix" => "",
+			"silent" => false,
+			"cache" => true
+		]);
+		$this->options->merge( null, $options );
+
+		$this->registerFull( $templates );
 	}
 
 	/**
-	 * extracts the content from a file
-	 * this function removes all line breaks and tabs.. etc. a one line string will be returned
+	 * returns the (extracted) template content from a file
 	 * 
-	 * @param string $file - the file path including the full name
-	 * @param boolean $cache - describes wether this file should be cached
+	 * when passing the $file param keep in mind that the "dir" key of the options
+	 * will be prepended when defined!
 	 * 
-	 * @return string
+	 * @param string $file - template file
+	 * @param array $args - arguments of this template
+	 * 	marker - the marker surrounding the template
+	 * 		if marker null when the content from the file itself is interpreted as the template
+	 * 
+	 * @return false - when the file doesnt exists
+	 * @return string - the file content
 	 */
-	public function getFileTemplate( string $file, bool $cache = true ) {
+	public function extractTemplateContent( array $args ) {
 
-		// when in cache
-		if ( isset($this->cache[$file]) )
-			return $this->cache[$file];
-		
-		// on invalid values
-		if ( empty($file) )
-			return print_r( "Templax: invalid filename", false );
-		
-		// on not existing file
-		if ( !file_exists($file) )
-			return print_r( "Templax: file '{$file}' doesnt exist", false );
-		
-		$content = preg_replace("/\r\n/", "", preg_replace("/\s{2,}/", "", file_get_contents($file)) );
+		$args = array_merge( $this->options->all(), $args );
+		$fileContent = $this->fileContent( $this->filePath($args), $args );
 
-		// cache when permission given
-		if ( $cache ) $this->cache[$file] = $content;
+		if ( !$fileContent )
+			return false;
+		
+		// either extract whole file or simply an extract of it
+		$content = "";
+
+		if ( !is_null($args["marker"]) ) {
+
+			preg_match( "/<{$args['marker']}>(.*)?<\/{$args['marker']}>/si" , $fileContent, $match );
+			$content = $match[1];
+		}
+
+		else
+			$content = $fileContent;
 
 		return $content;
 	}
 
 	/**
-	 * returns the template within a file surrounded by the template id
-	 * 
-	 * @param string @id - the template id
-	 * @param string @file - the file in which the template is defined
-	 * 
-	 * @return string|null
+	 * returns the correct filepath based on the given arguments
 	 */
-	public function extractTemplateFromFile( string $id, string $file ) {
+	public function filePath( array $args ) {
 
-		// on invalid values
-		if ( empty($id) )
-			return print_r( "Templax: invalid id in in extracting the template from file '{$file}'", false );
+		// when no directory is defined then simply use the file
+		if ( !isset($args["dir"]) )
+			return (string) $args["prefix"] . (string) $args["file"];
 		
-		// on not existing file
-		if ( !file_exists($file) )
-			return print_r( "Templax: file '{$file}' doesnt exist", false );
-		
-		// extract template
-		$marker = "###" . strtoupper($id) . "###";
-		$regex = "/" . $marker . "(.*)" . $marker . "/";
-
-		preg_match( $regex, $this->getFileTemplate( $file ), $template );
-
-		return ($template) ? $template[1] : null;
+		// else when the directory is defined prepend it to the file name
+		return (string) ($args["dir"] . (string) $args["prefix"] . (string) $args["file"]);
 	}
 
 	/**
-	 * returns the template instance or null when not found or invalid id
+	 * retuns the file content
 	 * 
-	 * @param string $id - the template id
+	 * the difference between a simple file_get_contents and this function is
+	 * this function caches the file content when desired
 	 * 
-	 * @return \Templax\Source\Models\Template|null
+	 * @param string $file - the file
+	 * @param array $args - options
+	 * 	cache - shall this file be cached for later use?
+	 * 	dir - the directory of the file with a following shlash (x:path/to/dir/)
+	 * 
+	 * @return false - when file doesnt exists
+	 * @return string - the file content
 	 */
-	public function &get( $id ) {
+	public function fileContent( string $file, array $args ) {
 
-		if ( !$this->has($id) )
+		// check cache
+		if ( $this->fileCache->has($file) )
+			return $this->fileCache->get($file);
+
+		if ( empty($file) || !file_exists($file) )
+			return false;
+		
+		$content = preg_replace("/\r\n/", "", preg_replace("/\s{2,}/", "", file_get_contents( $file )) );
+
+		# remove html comments
+		$content = preg_replace( "/<!--(.*?)-->/", "", $content );
+
+		if ( !$args["cache"] )
+			return $content;
+		
+		return $this->fileCache->set($file, $content)->get($file);
+	}
+
+	/**
+	 * registers a template via raw values and returns the registered template
+	 * 
+	 * @param string $key - template key
+	 * @param string $value - template value
+	 * @param array $markup - default markup that will be applied before parsing
+	 * @param array $options - default option that will be applied before parsing
+	 * 
+	 * @return null - when registration values are invalid
+	 * @return \Templax\Models\Template - reference to the created template
+	 */
+	public function &registerRaw( string $key, string $value, array $markup = [], array $options = [] ) {
+		
+		if ( !$key )
 			return null;
+
+		$this->set( $key, new Models\Template( $key, $value, $markup, $options ) );
 		
-		return $this->templates[$id];
+		return $this->ref($key);
 	}
 
 	/**
-	 * returns all templates
+	 * registers a template via array definition
 	 * 
-	 * @return array
+	 * @param array $args - arguments of the template
 	 */
-	public function getTemplates() {
-		
-		return $this->templates;
+	public function &registerArray( array $args ) {
+
+		$preped = array_merge([ "key" => "", "value" => "", "markup" => [], "options" => [] ], $args );
+
+		return call_user_func_array( [$this, "registerRaw"], $preped );
 	}
 
 	/**
-	 * returns the existance of a registered template as boolean
+	 * registers a set of templates via full configuration
 	 * 
-	 * @param string $id - the template id
+	 * the $args array shall contain the following keys
+	 * 	[
+	 * 		"templates" => [your_template_definitions]
+	 * 		"options" => [your_options_for_the_registrations]
+	 * 	]
 	 * 
-	 * @return boolean
+	 * # the individual template definition
+	 * it can either be a simple string containing the key which also serves as the template marker
+	 * or an array containing the following
+	 * 
+	 * 	template_key [
+	 * 		(optional @see below) "key" => "template_key"
+	 * 		(optional @see below) "marker" => "your_marker",
+	 * 		(optional) "file" => "your_file",
+	 * 		(optional) (markup) "markup" => [your_default_markup],
+	 * 		(optional) (options) "options" => [your_default_options]
+	 * 	]
+	 * # key - is optional when the key of the template configuration is defined
+	 * # marker - is optional when the key is missing or the marker differs from the key
+	 * 
+	 * ****************************************************************************************
+	 * 
+	 * @param array $args - the template registration arguments
+	 * 
+	 * @return boolean - true on success else false
 	 */
-	public function has( $id ) {
+	public function registerFull( array $args ) {
+
+		if ( empty($args["templates"]) )
+			return true;
 		
-		return is_string($id) && isset($this->templates[$id]);
-	}
+		$options = array_merge( $this->options->all(), (array) $args["options"] );
+		$base = array_merge( ["key" => "", "value" => "", "markup" => [], "options" => []], $options );
 
-	/**
-	 * registers a template
-	 * 
-	 * @param string $id - the template id
-	 * @param array $config - the template configuration @see __construct( ... )
-	 * 
-	 * @return boolean
-	 */
-	public function register( string $id, array $args ) {
-		
-		if ( empty($id) || empty($args) )
-			return print_r( "Templax: invalid values in registration", false );
-		
-		// register either single template file or multiple template file
+		foreach( $args["templates"] as $key => $config ) {
 
-		// substitutions
-		$cache = ( isset($args["options"]["cache"]) )
-			? $args["options"]["cache"]
-			: true;
-		
-		$tContent = !empty( $args["marker"] )
-			? $this->extractTemplateFromFile( $args["marker"], $args["file"] )
-			: $this->getFileTemplate( $args["file"], $cache );
+			// build the template registration
+			$reg = $base;
 
-		if ( !$tContent )
-			return print_r( "Templax: failed to extract template from file '{$file}' failed", false );
-
-		$this->templates[$id] = new Models\Template( $id, $tContent, $args["markup"], $args["options"] );
-
-		return true;
-	}
-
-	/**
-	 * registers multiple templates as a whole
-	 * 
-	 * @param array $templates - the templates that shall be registered
-	 * @param bool $cancelOnFail - defines wether the registration should cancel
-	 * 	further registrationg when one template failed to be registered
-	 * 
-	 * @return boolean
-	 */
-	public function registerTemplateSet( array $templates, bool $cancelOnFail = false ) {
-
-		// nothing to register ..
-		if ( empty($templates) )
-			return !$cancelOnFail;
-
-		// the full base of a template registration configuration
-		$regBase = array( "markup" => array(), "options" => array(), "file" => "", "marker" => "" );
-
-		// try to register every template but perfom checks on type to avoid type exceptions
-		foreach( $templates as $id => $config ) {
-			
-			$regArgs = $regBase;
-			$valid = true;
-			
-			// when invalid id nothing to register further more
-			if ( !is_string($id) || empty($id) )
-				$valid = false;
-			
-			// when no configuration is given nothing to register
-			else if ( !empty($config) ) {
-
-				// on single template file
-				if ( is_string($config) )
-					$regArgs["file"] = $config;
-					
-				// on (expected) multiple template files
-				else if ( is_array($config) )
-					foreach( $config as $key => $value )
-						$regArgs[$key] = $value;
-				
-				else $valid = false;
+			// first up check wether the key is defined as index
+			if ( is_string($key) ) {
+				$reg["key"] = $reg["marker"] = $key;
 			}
 			
-			// invalid when no valid values are given
-			else $valid = false;
+			// or the key is defined as value of the key
+			else if ( is_string($config) ) {
+				$reg["key"] = $reg["marker"] = $config;
+			}
 
-			if ( (!$valid || !$this->register($id, $regArgs)) && $cancelOnFail )
+			// now the definition / use the given one when array
+			if ( is_array($config) ) {
+				$reg = array_merge( $reg, $config );
+
+				if ( !$reg["marker"] )
+					$reg["marker"] = $reg["key"];
+			}
+
+			// get template value
+			$reg["value"] = (string) @$this->extractTemplateContent($reg);
+			
+			// verify and register
+			if ( !$options["silent"] && !$reg["key"] || !$this->registerArray($reg) )
 				return false;
 		}
 

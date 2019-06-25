@@ -1,6 +1,4 @@
 <?php
-
-//_____________________________________________________________________________________________
 /**********************************************************************************************
  * 
  * autoloader for dynamic file inclusion
@@ -10,27 +8,19 @@
 /*********************************************************************************************/
 
 /**
- * autoloader function to include files by namespace
+ * the most basic autoloader
  * 
- * @param string $class - the classname including namespace
+ * @param string $className - class name
  * 
  * @return boolean
  */
-function DynamicAutoloader($class)
-{
-	// turn slashes
-	$path = CONREN_ROOT . DIRECTORY_SEPARATOR . str_replace( "\\", DIRECTORY_SEPARATOR, $class ) . ".php";
+function BasicAutoloader( $className ) {
 
-	if ( !file_exists($path) )
-		return false;
-	
-	return (bool) require_once( $path );
+	$path = C7_ROOT . DIRECTORY_SEPARATOR . str_replace( "\\", DIRECTORY_SEPARATOR, $className ) . ".php";
+
+	return !file_exists($path) ? false : require_once( $path );
 }
 
-/**
- * register autoloader
- */
-spl_autoload_register('DynamicAutoloader');
+spl_autoload_register('BasicAutoloader');
 
-//_____________________________________________________________________________________________
-//
+//---------------------------------------------------------------------------------------------

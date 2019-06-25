@@ -1,6 +1,4 @@
 <?php
-
-//_____________________________________________________________________________________________
 /**********************************************************************************************
  * 
  * .. and the story begins ..
@@ -11,18 +9,23 @@
 
 require_once( "./bootstrap.php" );
 
-//_____________________________________________________________________________________________
-	// load and initialize system
-	\Conference\Core\Bootstrap\Bootstrap::Init();
+$v1 = (int) str_replace( ".", "", "7.2.13" );
+$v2 = (int) str_replace( ".", "", "5.6.3" );
 
-	// handle incoming request
-	$request = \Conference::service( "requestHandler" )->handleRequest();
+var_dump( version_compare(phpversion(), "7.2.18") );
 
-	// get response 
-	$response = \Conference::service( "router" )->parseRequest( $request );
-	
-	// parse response through the renderer and display output
-	\Conference::service( "renderer" )->render( $response );
+print_r( phpversion() );
 
-//_____________________________________________________________________________________________
-//
+# boot system
+// \Conference\Core\Bootstrap\Bootstrap::init();
+
+exit;
+
+# build request
+$request = \Conference::service( "request.handler" );
+
+# build response based on the built request
+$response = \Conference::service( "router" )->parseRequest( $request );
+
+# render content
+\Conference::service( "renderer" )->render( $response );

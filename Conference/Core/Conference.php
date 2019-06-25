@@ -23,6 +23,17 @@ class Conference {
 	private function __construct() {}
 
 	/**
+	 * returns the current user
+	 * 
+	 * @return object - the user record
+	 * @return null - when no user is logged in
+	 */
+	static public function currentUser() {
+
+		return Bootstrap\Bootstrap::$sm->get( "userManager" )->getCurrentUser();
+	}
+
+	/**
 	 * returns the database instance
 	 * 
 	 * @return \PDO - the connected database instance
@@ -32,49 +43,29 @@ class Conference {
 
 		return Bootstrap\Bootstrap::$db;
 	}
-	
-	/**
-	 * returns the requested service
-	 * 
-	 * @param1 string - expects the service id
-	 * 
-	 * @return object - the service instance
-	 * @return null - no service found under provided id
-	 */
-	static public function service( $id ) {
 
-		return Bootstrap\Bootstrap::$sm->get( $id );
+	/**
+	 * returns a prepared 403 response
+	 */
+	static public function http403Response() {
+
+		return ( new \Conference\Core\Controller\Http403Controller() )->index();
 	}
 
 	/**
-	 * returns the actual service manager
-	 * 
-	 * @return \Conference\Core\Service\ServiceManager
+	 * returns a prepared 404 response
 	 */
-	static public function serviceManager() {
+	static public function http404Response() {
 
-		return Bootstrap\Bootstrap::$sm;
+		return ( new \Conference\Core\Controller\Http404Controller() )->index();
 	}
 
 	/**
-	 * returns the current user
-	 * 
-	 * @return object - the user record
-	 * @return null - when no user is logged in
+	 * redirects the user
 	 */
-	static public function user() {
+	static public function redirect( string $key ) {
 
-		return Bootstrap\Bootstrap::$sm->get( "userManager" )->getUser();
-	}
-
-	/**
-	 * returns the actual user manager
-	 * 
-	 * @return \Conference\Core\User\UserManager;
-	 */
-	static public function userManager() {
-
-		return Bootstrap\Bootstrap::$um;
+		Bootstrap\Bootstrap::$sm->get( "router" )->redirectByRouteKey( $key );
 	}
 
 	/**
@@ -102,21 +93,38 @@ class Conference {
 
 		return new \Conference\Core\Controller\Response( $markup, $template, $hooks );
 	}
-
+	
 	/**
-	 * returns a prepared 404 response
+	 * returns the requested service
+	 * 
+	 * @param1 string - expects the service id
+	 * 
+	 * @return object - the service instance
+	 * @return null - no service found under provided id
 	 */
-	static public function Http404Response() {
+	static public function service( $id ) {
 
-		return ( new \Conference\Core\Controller\Http404Controller() )->index();
+		return Bootstrap\Bootstrap::$sm->get( $id );
 	}
 
 	/**
-	 * returns a prepared 403 response
+	 * returns the actual service manager
+	 * 
+	 * @return \Conference\Core\Service\ServiceManager
 	 */
-	static public function Http403Response() {
+	static public function serviceManager() {
 
-		return ( new \Conference\Core\Controller\Http403Controller() )->index();
+		return Bootstrap\Bootstrap::$sm;
+	}
+
+	/**
+	 * returns the actual user manager
+	 * 
+	 * @return \Conference\Core\User\UserManager;
+	 */
+	static public function userManager() {
+
+		return Bootstrap\Bootstrap::$um;
 	}
 }
 

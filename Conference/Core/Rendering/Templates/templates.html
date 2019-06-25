@@ -1,0 +1,75 @@
+<!-- default page structure -->
+###CONREN_ROOT###
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- header elements -->
+		{{ foreach: head }}
+		{{ templateSelect: element }}
+		{{ foreach end: head }}
+		<title>{{ webpage-title }}</title>
+	</head>
+	<body>
+		<!-- main content tree -->
+		{{ foreach: body }}
+			{{ templateSelect: template }}
+		{{ foreach end: body }}
+
+		<!-- scripts -->
+		{{ foreach: body-bottom }}
+			{{ templateSelect: template }}
+		{{ foreach end: body-bottom }}
+	</body>
+</html>
+###CONREN_ROOT###
+
+<!-- simple messaging -->
+###CONREN_BASIC_MESSAGE###
+{{ foreach: messages }}
+<p>{{ message }}</p>
+{{ foreach end: messages }}
+###CONREN_BASIC_MESSAGE###
+
+<!-- the elements attribute list -->
+###CONREN_ATTRIBUTE_LIST###
+{{ foreach: attributes }}
+{{ attribute }}="{{ value }}"
+{{ foreach end: attributes }}
+###CONREN_ATTRIBUTE_LIST###
+
+<!-- single tag elements -->
+###CONREN_HTMLELEMENT_SINGLETAG###
+<{{ tag }} {{ template: conren_attribute_list }} />
+###CONREN_HTMLELEMENT_SINGLETAG###
+
+<!-- multitag element -->
+###CONREN_HTMLELEMENT_MULTITAG###
+<{{ tag }} {{ template: conren_attribute_list }}>
+{{ foreach: elements }}
+	{{ templateSelect: element }}
+{{ foreach end: elements }}
+</{{ tag }}>
+###CONREN_HTMLELEMENT_MULTITAG###
+
+<!-- stylesheets -->
+###CONREN_ELEMENT_STYLES###
+{{ foreach: styles }}
+<link rel="stylesheet" type="text/css" href="{{ source }}">
+{{ foreach end: styles }}
+###CONREN_ELEMENT_STYLES###
+
+<!-- script element -->
+###CONREN_ELEMENT_SCRIPT###
+<script {{ case: source }}src="{{ source }}"{{ case end: source }}>{{ content }}</script>
+###CONREN_ELEMENT_SCRIPT###
+
+<!-- basic element listing -->
+<!-- ###CONREN_ELEMENT_LISTING###
+<ul {{ templateSelect: conren_attribute_list }}>
+	{{ foreach: list-items }}
+		<li {{ templateSelect: conren_attribute_list }}>
+			{{ templateSelect: }}
+		</li>
+	{{ foreach: list-items }}
+</ul>
+###CONREN_ELEMENT_LISTING### -->

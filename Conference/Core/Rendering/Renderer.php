@@ -11,114 +11,45 @@
 
 namespace Conference\Core\Rendering;
 
-use \Conference\Core\Controller;
+use \Conference\Core\Classes;
+use \Conference\Core\Http\Response;
 
 //_____________________________________________________________________________________________
-class Renderer {
-
-	/**
-	 * default markup
-	 * 
-	 * @var array
-	 */
-	private $baseMarkup;
-	
-	/**
-	 * default options
-	 * 
-	 * @var array
-	 */
-	private $baseOptions;
-
-	/**
-	 * default hooks
-	 * 
-	 * @var array
-	 */
-	private $baseHooks;
+class Renderer extends Classes\ParameterBag {
 
 	/**
 	 * construction
 	 */
 	public function __construct() {
 
-		$renderConfig = $GLOBALS["CONREN"]["Rendering"];
-
-		$this->baseMarkup = $this->buildBaseMarkup();
-		$this->baseOptions = $renderConfig["BaseOptions"];
-		$this->baseHooks = $renderConfig["BaseHooks"];
+		parent::__construct();
 	}
 
 	/**
 	 * renders the given response
 	 */
-	public function render( Controller\ControllerBase $response ) {
+	public function render( Response\Response $response ) {
 
-		$content = "";
+		// prepare the actual content
+		$response->prepare();
 
-		// on invalid response
-		if ( is_null($response) )
-			$content = "no content";
-		
-		// parse the response
-		else {
+		// debug( \Conference::service("logfile")->userLogs(true) );
 
-			$content = \Templax\Templax::parse(
-				$response->template,
-				$response->markup,
-				$response->hooks
-			);
-		}
+		benchmark();
 
-		echo $content;
+		// debug( $response );
+		// exit;
 
-		return true;
-	}
-	
-	/**
-	 * builds the default markup
-	 */
-	private function buildBaseMarkup() {
-		
-		$markup = array(
-			"webpage-title" => "Conference",
-		);
+		// check benchmarking
+		if ( !$GLOBALS["CONREN"]["Benchmarking"]["benchmark"] )
+			$response->sendContent();
+		else
+			printBenchmarks();
 
-		$GLOBALS["CONREN"]["Rendering"]["BaseMarkup"] = $markup;
-
-		return $markup;
-	}
-
-	/**
-	 * returns the default markup
-	 * 
-	 * @return array
-	 */
-	public function getBaseMarkup() {
-		
-		return $this->baseMarkup;
-	}
-
-	/**
-	 * returns the default options
-	 * 
-	 * @return array
-	 */
-	public function getBaseOptions() {
-
-		return $this->baseOptions;
-	}
-
-	/**
-	 * returns the default hooks
-	 * 
-	 * @return array
-	 */
-	public function getBaseHooks() {
-
-		return $this->hooks;
+		return $this;
 	}
 }
+
 
 //_____________________________________________________________________________________________
 //

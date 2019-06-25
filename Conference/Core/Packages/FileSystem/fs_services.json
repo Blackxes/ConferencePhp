@@ -1,0 +1,6 @@
+{
+	"service_config": {
+		"name": "[string] defines the name of the service",
+		"source": "class name including namespace"
+	}
+}

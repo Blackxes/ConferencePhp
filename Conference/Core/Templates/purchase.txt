@@ -1,0 +1,8 @@
+Sehr geehrter Herr/Frau {{ last_name }} <br>
+
+Ihre Bestellung besteht aus:
+
+{{ foreach: items }}
+{{ article_name }} / {{ amount }}x
+<br>
+{{ foreach end: items }}

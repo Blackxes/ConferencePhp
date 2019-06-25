@@ -1,0 +1,46 @@
+<!-- image slider -->
+###CONREN_SLIDER###
+<div class="conren-slider {{ slider-id }}">
+	<ul>
+	{{ foreach: images }}
+		<li class="conren-slider-item slider-item-{{ tx-index }}"><img src="{{ source }}" alt="{{ alt }}"></li>
+	{{ foreach end: images }}
+	</ul>
+</div>
+###CONREN_SLIDER###
+
+<!-- simple element listing -->
+###CONREN_ELEMENT_LISTING###
+<ul class="conren-listing {{ listing-id }}">
+	{{ foreach: list-items }}
+		<li class="conren-list-item {{ listing-id }}-{{ tx-index }}">
+			{{ templateSelect: list-item }}
+		</li>
+	{{ foreach end: list-items }}
+</ul>
+###CONREN_ELEMENT_LISTING###
+
+<!-- link -->
+###CONREN_LINK###
+<a class="conren-link {{ link-id }}" href="{{ href }}" target="{{ target }}">{{ label }}</a>
+###CONREN_LINK###
+
+<!-- body top element -->
+###CONREN_BODY_TOP###
+<div class="conren-body-top">
+	<div class="logo">
+		<img source="{{ logo-source }}" alt=""/>
+	</div>
+	<div class="product-search">
+		<form action="/product/search" class="product-search-form" target="top" method="get">
+			<input type="text" placeholder="Produkt finden .."/>
+			<button>Suchen</button>
+		</form>
+	</div>
+	<div class="account-container">
+		{{ template: account_simple }}
+		<div class="contact"></div>
+		{{ template: shopping_cart_simple }}
+	</div>
+</div>
+###CONREN_BODY_TOP###

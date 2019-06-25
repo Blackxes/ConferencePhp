@@ -15,13 +15,21 @@ use \Conference\Core\Routing;
 
 //_____________________________________________________________________________________________
 abstract class ControllerBase {
-
+	
+	
 	/**
-	 * the template for this controller
+	 * template
 	 * 
 	 * @var string
 	 */
 	public $template;
+
+	/**
+	 * markup hooks
+	 * 
+	 * @var array|null
+	 */
+	public $hooks;
 
 	/**
 	 * markup
@@ -31,37 +39,56 @@ abstract class ControllerBase {
 	public $markup;
 
 	/**
-	 * options
-	 * 
-	 * @var array|null
-	 */
-	public $options;
-
-	/**
-	 * markup hooks
-	 * 
-	 * @var array|null
-	 */
-	public $hooks;
-
-
-	/**
 	 * construction
+	 * 
+	 * HeadComment:
 	 */
-	public function __construct( array $markup = array(), array $options = array(), array $hooks = array() ) {
-
-		$renderer = \Conference::renderer();
-
-		$this->template = $GLOBALS["CONREN"]["Rendering"]["BaseTemplate"];
-		$this->markup = empty($markup) ? $renderer->getBaseMarkup() : $markup;
-		$this->options = empty($options) ? $renderer->getBaseOptions() : $options;
+	public function __construct( string $template = null, array $markup = [], array $hooks = [] ) {
+		
+		# initial defaults
+		$this->template = $template;
+		$this->markup = $markup;
 		$this->hooks = $hooks;
+
+		$this->prepare();
+	}
+	
+	/**
+	 * core initialization of controller
+	 * 
+	 * HeadComment:
+	 */
+	private function init( string $template = null, array $markup = [], array $hooks = [] ) {
+		
+		$this->template = $template;
+		$this->markup = $markup;
+		$this->hooks = $hooks;
+		
+		return true;
 	}
 
 	/**
 	 * the main entrance function
 	 */
-	abstract public function index();
+	public function index() {
+
+		$this->markup["page-title"] = $GLOBALS["CONREN"]["General"]["baseWebpageTitle"];
+
+		return $this;
+	}
+
+	/**
+	 * defines the default markup for the whole controller
+	 * 
+	 * HeadComment:
+	 */
+	public function prepare() {
+
+		# prepare initial markup
+		$this->markup = \Conference::service( "markupbuilder" )->prepare();
+
+		return $this;
+	}
 }
 
 //_____________________________________________________________________________________________

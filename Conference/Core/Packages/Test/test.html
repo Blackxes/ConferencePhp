@@ -1,0 +1,178 @@
+<render_test>
+{{ template: render-test-title }}
+{{ template: render-test-container }}
+{{ template: render-test-form }}
+{{ template: render-test-button }}
+</render_test>
+
+<!-- title -->
+<render-test-title>
+<div class="render-test">
+	<div>
+		<h1>H1 title</h1>
+	</div>
+	<div>
+		<h2>H2 title</h2>
+	</div>
+	<div>
+		<h3>H3 title</h3>
+	</div>
+	<div>
+		<h4>H4 title</h4>
+	</div>
+	<div>
+		<h5>H5 title</h5>
+	</div>
+	<div>
+		<h6>H6 title</h6>
+	</div>
+</div>
+</render-test-title>
+
+<!-- container types -->
+<render-test-container>
+<div class="render-test">
+	<div class="container-box">
+		<h1>Regular Container</h1>
+		<p>{{ description_1 }}</p>
+		<p>{{ description_2 }}</p>
+	</div>
+	<div class="container-box container-1">
+		<h2>Containerclass "container-1"</h2>
+		<p>{{ description_1 }}</p>
+		<p>{{ description_2 }}</p>
+	</div>
+	<div class="container-box container-2">
+		<h2>Containerclass "container-2"</h2>
+		<p>{{ description_1 }}</p>
+		<p>{{ description_2 }}</p>
+	</div>
+	<div class="container-box container-3">
+		<h2>Containerclass "container-3"</h2>
+		<p>{{ description_1 }}</p>
+		<p>{{ description_2 }}</p>
+	</div>
+</div>
+</render-test-container>
+
+<!-- form elements -->
+<render-test-form>
+<div class="render-test">
+	<form>
+		<div class="form-group">
+			<div class="form-container">
+				<div class="form-holder">
+					<label for="form-email">{{ title }}</label>
+					<p>{{ words_50 }}</p>
+				</div>
+				<div class="form-input">
+					<input id="form-email" name="conren_form_email" placeholder="Email" type="text" value="{{ email }}" >
+				</div>
+			</div>
+			<div class="form-container">
+				<div class="form-holder">
+					<label for="form-email">{{ title }}</label>
+					<p>{{ words_50 }}</p>
+				</div>
+				<div class="form-input">
+					<input id="form-email" name="conren_form_email" placeholder="Email" type="text" value="{{ email }}" >
+				</div>
+			</div>
+		</div>
+		<div class="form-group form-h">
+			<div class="form-container">
+				<div class="form-holder">
+					<label for="form-email">{{ title }}</label>
+					<p>{{ words_50 }}</p>
+				</div>
+				<div class="form-input">
+					<input id="form-email" name="conren_form_email" placeholder="Email" type="text" value="{{ email }}" >
+				</div>
+			</div>
+			<div class="form-container">
+				<div class="form-holder">
+					<label for="form-email">{{ title }}</label>
+					<p>{{ words_50 }}</p>
+				</div>
+				<div class="form-input">
+					<input id="form-email" name="conren_form_email" placeholder="Email" type="text" value="{{ email }}" >
+				</div>
+			</div>
+		</div>
+		<div class="form-group form-h">
+			<div class="form-container">
+				<div class="form-holder">
+					<label for="form-email">{{ title }}</label>
+					<p>{{ words_50 }}</p>
+				</div>
+				<div class="form-input">
+					<select class="">
+						<option>Lorem Ipsum</option>
+						<option>Bacon Ipsum</option>
+						<option>Genius Ipsum</option>
+						<option>Falar Ipsum</option>
+					</select>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+</render-test-form>
+
+<!-- buttons -->
+<render-test-button>
+<div class="render-test">
+	<button>Regular Button</button>
+	<button class="success">Success button</button>
+	<button class="warning">Warning button</button>
+	<button class="error">Error button</button>
+	<button class="info">Info button</button>
+	<input type="submit" value="Sende dieses vorzügliche Formular ab">
+</div>
+</render-test-button>
+
+<!-- listings -->
+<render-test-listing>
+<div class="render-test">
+	<div class="container-box">
+		<h2>Grid listing</h2>
+		<ul class="grid grid-3 listing-center center">
+			<li>{{ title }}</li>
+			<li>{{ title }}</li>
+			<li>{{ title }}</li>
+			<li>{{ title }}</li>
+		</ul>
+	</div>
+
+	<div class="container-box">
+		<h2>Flex listing</h2>
+		<ul class="flex flex-wrap flex-2 listing-center">
+			<li>{{ title }}</li>
+			<li>{{ title }}</li>
+			<li>{{ title }}</li>
+			<li>{{ title }}</li>
+		</ul>
+	</div>
+</div>
+</render-test-listing>
+
+<!-- slider -->
+<render-test-slider>
+<div class="container-box">
+	<div class="slider-wrap">
+		<div class="slider-inner-wrap">
+			<ul class="slider">
+				<li><p>{{ title }}</p></li>
+				<li><p>{{ title }}</p></li>
+				<li><p>{{ title }}</p></li>
+				<li><p>{{ title }}</p></li>
+				<li><p>{{ title }}</p></li>
+				<li><p>{{ title }}</p></li>
+				<li><p>{{ title }}</p></li>
+				<li><p>{{ title }}</p></li>
+				<li><p>{{ title }}</p></li>
+			</ul>
+		</div>
+	</div>
+</div>
+</render-test-slider>

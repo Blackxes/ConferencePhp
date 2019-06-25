@@ -1,0 +1,99 @@
+###USER_LOGIN_FORMULAR###
+<form action="user/login" class="form user-login-form" method="post">
+	<!-- email -->
+	<div class="form-item">
+		<div class="form-title">
+			<label>Email</label>
+		</div>
+		<div class="form-field">
+			<input id="email" type="text" value="{{ email }}" required/>
+		</div>
+	</div>
+
+	<!-- password -->
+	<div class="form-item">
+		<div class="form-title">
+			<label>Passwort</label>
+		</div>
+		<div class="form-field">
+			<input id="password" type="text" value="" required/>
+		</div>
+	</div>
+
+	<button class="form-item submit">Login</button>
+</form>
+###USER_LOGIN_FORMULAR###
+
+
+###USER_REGISTER_FORMULAR###
+<form id="user-formular">
+
+	<!-- first name -->
+	<div class="form-item">
+		<div class="form-title">
+			<label>Vorname</label>
+		</div>
+		<div class="form-field">
+			<input id="first_name" type="text" value="{{ first_name }}" required/>
+		</div>
+	</div>
+
+	<!-- last name -->
+	<div class="form-item">
+		<div class="form-title">
+			<label>Nachname</label>
+		</div>
+		<div class="form-field">
+			<input id="last_name" type="text" value="{{ last_name }}" required/>
+		</div>
+	</div>
+
+	<!-- email -->
+	<div class="form-item">
+		<div class="form-title">
+			<label>Email</label>
+		</div>
+		<div class="form-field">
+			<input type="text" value="{{ email }}" required/>
+		</div>
+	</div>
+
+	<!-- password -->
+	<div class="form-item">
+		<div class="form-title">
+			<label>Password</label>
+		</div>
+		<div class="form-field">
+			<input id="password" type="password" required/>
+		</div>
+	</div>
+
+	<!-- password verification -->
+	<div class="form-item">
+		<div class="form-title">
+			<label>Vorname</label>
+		</div>
+		<div class="form-field">
+			<input id="password_verify" type="text" value="{{ first_name }}" required/>
+		</div>
+	</div>
+
+	<!-- company -->
+	<div class="form-item">
+		<div class="form-title">
+			<label>Gesellschaft</label>
+		</div>
+		<div class="form-field">
+			<input id="company" type="password" required/>
+		</div>
+	</div>
+</form>
+###USER_REGISTER_FORMULAR###
+
+<!-- user profile -->
+<!-- ###USER_PROFILE###
+<div class="user-profile">
+	<h2>{{ first_name }} {{ last_name }}</h2>
+	{{ conren_side_menu }}
+</div>
+###USER_PROFILE### -->

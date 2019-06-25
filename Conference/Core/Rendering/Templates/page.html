@@ -1,52 +1,91 @@
-<!-- default page structure -->
-###CONREN_ROOT###
-<!DOCTYPE html>
-<html>
-	<head>
+<page_spacer>
+<div class="page-spacer"></div>
+</page_spacer>
 
-		<!-- header elements -->
-		{{ foreach: elements }}
-		{{ templateSelect: element }}
-		{{ foreach end: elements }}
+<!-- page logo -->
+<main_logo>
+<div class="logo">
+	<a href="{{ link }}">
+		<img src="{{ source }}" alt="{{ alt }}" />
+	</a>
+</div>
+</main_logo>
 
-		<!-- title -->
-		<title>{{ webpage-title }}</title>
+<!-- main searchbar -->
+<searchbar>
+<div class="searchbar justify-self">
+	<form class="flex" action="{{ conren_route_search }}" method="{{ method }}" target="{{ target }}">
+		<input class="fullw" type="text" placeholder="Produkt finden .."/>
+		<button class="btn-2 icon">
+			<i class="fas fa-search"></i>
+		</button>
+	</form>
+</div>
+</searchbar>
 
-		<meta charset="utf-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!-- image slider -->
+<conren_slider>
+<div {{ case: slider-id }}id="{{ slider-id }}"{{ case end: slider-id }} class="slider-wrap container" data-slider="{{ slider-id }}">
+	<div class="slider-inner-wrap">
+		<ul class="slider">
+			{{ foreach: images }}
+			<li class="slider-item slider-item-{{ tx-index }}"><img src="{{ source }}" alt="{{ alt }}" /></li>
+			{{ /foreach: images }}
+		</ul>
+	</div>
+</div>
+</conren_slider>
 
-		<title>{{ webpage-title }}</title>
+<!-- simple element listing -->
+<conren_element_listing>
+<ul class="conren-listing {{ listing-id }}">
+	{{ foreach: list-items }}
+	<li class="conren-list-item {{ listing-id }}-{{ tx-index }}">
+		{{ templateSelect: template }}
+	</li>
+	{{ /foreach: list-items }}
+</ul>
+</conren_element_listing>
 
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-		<script src="main.js"></script>
-	</head>
-	<body></body>
-</html>
-###CONREN_ROOT###
+<!-- link -->
+<conren_link>
+<a class="conren-link {{ link-id }}" href="{{ href }}" target="{{ target }}">{{ label }}</a>
+</conren_link>
 
-<!-- the elements attribute list -->
-###CONREN_ATTRIBUTE_LIST###
-{{ foreach: attributes }}
-{{ attribute }}="{{ value }}"
-{{ foreach end: attributes }}
-###CONREN_ATTRIBUTE_LIST###
+<!-- product management -->
+<conren_settings>
+{{ if: is_admin }}
+<div class="conren-settings">
+	<ul class="menu">
+		{{ foreach: menu-items }}
+		<li class="menu-item settings-{{ link-type }}"><a class="btn more" href="{{ link }}">{{ label }}</a></li>
+		{{ /foreach: menu-items }}
+	</ul>
+</div>
+{{ /if: is_admin }}
+</conren_settings>
 
-<!-- meta tag element -->
-###CONREN_ELEMENT_METATAG###
-{{ foreach: meta }}
-<meta {{ name }}="{{ nvalue }}" {{ content }}="{{ cvalue }}">
-{{ foreach end: meta }}
-###CONREN_ELEMENT_METATAG###
+<!-- footer -->
+<conren_footer>
+<ul class="footer-menu container-10-5 grid-gap grid grid-h justify-content">
+	{{ foreach: links }}
+	<li class="container-reset">
+		<a class="link link-passive container-box container-5-10" href="{{ link }}">{{ label }}</a>
+	</li>
+	{{ /foreach: links }}
+</ul>
+</conren_footer>
 
-<!-- stylesheets -->
-###CONREN_ELEMENT_STYLES###
-{{ foreach: styles }}
-<link rel="stylesheet" type="text/css" href="{{ source }}">
-{{ foreach end: styles }}
-###CONREN_ELEMENT_STYLES###
-
-<!-- script element -->
-###CONREN_ELEMENT_SCRIPT###
-<script {{ case: source }}src="{{ source }}"{{ case end: source }}>{{ content }}</script>
-###CONREN_ELEMENT_SCRIPT###
+<conren_panel>
+{{ if: conren_user_is_super }}
+<div class="menu-panel">
+	<ul class="flex flex-h menu">
+		{{ foreach: menu }}
+		<li class="list-item">
+			<a href="{{ link }}">{{ title }}</a>
+		</li>
+		{{ /foreach: menu }}
+	</ul>
+</div>
+{{ /if: conren_user_is_super }}
+</conren_panel>

@@ -1,0 +1,143 @@
+<!-- login -->
+<conren_user_form_login>
+<div id="user-login" class="conren-login align-center"></div>
+
+<!-- <div class="conren-login align-center">
+	<div class="conren-login-container container-box container-40-20">
+		<form action="{{ conren_route_user_login }}" class="fullw" method="post">
+			<div class="title-wrap center">
+				<h2>Benutzer Login</h2>
+			</div>
+			<input type="hidden" name="user_login" value="1">
+			<div class="form-group fullw">
+				<div class="form-container">
+					<div class="form-input">
+						<input id="form-email" name="email" placeholder="Email" type="text" value="{{ email }}">
+					</div>
+				</div>
+				<div class="form-container">
+					<div class="form-input">
+						<input id="form-password" name="password" placeholder="Passwort" type="password">
+					</div>
+				</div> -->
+				<!-- <div class="form-container">
+					<div class="form-holder grid grid-col-auto-fill align-center">
+						<label class="mini center">Eingeloggt bleiben</label>
+						<div class="form-input">
+							<input id="form-remember" name="" type="checkbox">
+						</div>
+					</div>
+				</div> -->
+				<!-- <button class="btn btn-warning container-nomargin fullw">Login</button>
+			</div>
+		</form>
+	</div>
+</div> -->
+</conren_user_form_login>
+
+<!-- logout -->
+<conren_user_form_logout>
+<form action="{{ action }}" class="form-user-logout">
+	<button class="btn submit">Logout</button>
+</form>
+</conren_user_form_logout>
+
+<!-- user registration form -->
+<conren_user_form_register>
+<form action="{{ conren_route_user_verify_registration }}" class="form-user-register container simple" method="post">
+
+	<!-- first name -->
+	{{ templateSelect: first_name }}
+
+	<!-- last name -->
+	{{ templateSelect: last_name }}
+
+	<!-- email -->
+	{{ templateSelect: email }}
+
+	<!-- password -->
+	{{ templateSelect: password }}
+	{{ templateSelect: password_verify }}
+
+	<!-- trigger -->
+	{{ templateSelect: user_register }}
+
+	{{ template: conren_form_submit }}
+</form>
+</conren_user_form_register>
+
+<conren_user_profile>
+<div class="user-info container-raw-2">
+	{{ if: conren_user_logged_in }}
+	<div class="">
+		<div class="container-box container-20">
+			<ul class="listing listing-decent">
+				<li class="list-item grid grid-2 align-items">
+					<label>Email</label>
+					<p>{{ email }}</p>
+				</li>
+				<li class="list-item grid grid-2 align-items">
+					<label>Gesellschaft</label>
+					<a href="{{ company-link }}">{{ company }}</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	{{ /if: conren_user_logged_in }}
+
+	<!-- purchase history -->
+	<!-- {{ template: purchase_history }} -->
+
+	<!-- backup -->
+	{{ else: conren_user_logged_in }}
+	<p>Benutzerprofil nicht gefunden</p>
+	{{ /else: conren_user_logged_in }}
+</div>
+</conren_user_profile>
+
+<!-- user teaser -->
+<conren_user_teaser>
+<div class="profile-teaser">
+	{{ if: conren_user_logged_in }}
+	<div class="js_container-ratio grid-gap" data-container-ratio="1-1" data-container-ratio-type="grid">
+		<a class="btn btn-info container-ratio container-nomargin far fa-user-circle" href="{{ conren_route_user_profile }}">{{ last_name }}</a>
+		<a class="btn btn-warning container-ratio container-nomargin fas fa-shopping-cart" href="{{ conren_route_cart }}">{{ cart_item_count }}</a>
+	</div>
+	{{ /if: conren_user_logged_in }}
+
+	{{ else: conren_user_logged_in }}
+	<div class="grid grid-v">
+		<a class="btn info" href="{{ conren_route_user_login }}">Login</a>
+	</div>
+	{{ /else: conren_user_logged_in }}
+</div>
+</conren_user_teaser>
+
+<!-- list of all users -->
+<conren_user_listing>
+	{{ case: userlist }}
+		{{ foreach: userlist }}
+		<li class="container container-1">
+			<a href="user/{{ last_name }}">{{ first_name }} {{ last_name }}</a>
+		</li>
+		{{ /foreach: userlist }}
+	{{ /case: userlist }}
+	
+	{{ caseNot: userlist }}
+	<div class="container container-1">
+		<p>Keine Benutzer gefunden</p>
+	</div>
+	{{ /caseNot: userlist }}
+	
+	<form action="{{ conren_route_user_register }}">
+		<button class="success">Neuer Benutzer</button>
+	</form>
+</conren_user_listing>
+
+<!-- user addresses -->
+<user_addresses>
+<div class="title-wrap">
+	<h2>Addressen</h2>
+</div>
+{{ template: address_list }}
+</user_addresses>

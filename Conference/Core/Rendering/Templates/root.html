@@ -1,0 +1,125 @@
+<!-- default page structure -->
+<conren_root>
+	<!DOCTYPE html5 {{ lang }}>
+	<html>
+		<head>
+			<title>{{ title }}</title>
+
+			{{ case: base }}
+			<base href="{{ base }}">
+			{{ /case: base }}
+	
+			{{ foreach: meta }}
+			<meta {{ template: conren_attribute_list }}>
+			{{ /foreach: meta }}
+	
+			<!-- {{ foreach: inline-styles }}
+			<style>{{ content }}</style>
+			{{ /foreach: inline-styles }} -->
+	
+			{{ foreach: link }}
+			<link {{ template: conren_attribute_list }}>
+			{{ /foreach: link }}
+	
+			{{ foreach: script-head-extern }}
+			<script {{ template: conren_attribute_list }}></script>
+			{{ /foreach: script-head-extern }}
+	
+			{{ foreach: script-head-inline }}
+			<script>{{ content }}</script>
+			{{ /foreach: script-head-inline }}
+	
+			{{ foreach: custom-elements }}
+				{{ templateSelect: template }}
+			{{ /foreach: custom-elements }}
+		</head>
+		<body>
+			<div id="app" class="app">
+				<header id="header" class="header">
+					{{ foreach: header }}
+					{{ templateSelect: template}}
+					{{ /foreach: header }}
+				</header>
+				<main id="page" class="page">
+					{{ foreach: sections }}
+					<section {{ case: key }} id="section-{{ key }}"{{ /case: key }}>
+						{{ templateSelect: template }}
+					</section>
+					{{ /foreach: sections }}
+				</main>
+				<footer id="footer" class="footer">
+					{{ foreach: footer }}
+						{{ templateSelect: template }}
+					{{ /foreach: footer }}
+				</footer>
+				
+				<!-- scripts -->
+				{{ foreach: inline-scripts }}
+				<script>{{ content }}</script>
+				{{ /foreach: inline-scripts }}
+				
+				{{ foreach: script-body-extern }}
+				<script {{ template: conren_attribute_list }}></script>
+				{{ /foreach: script-body-extern }}
+			</div>
+		</body>
+	</html>
+</conren_root>
+
+<!-- login template -->
+<conren_root_login>
+	<!DOCTYPE html5 {{ lang }}>
+	<html>
+		<head>
+			<title>{{ title }}</title>
+
+			{{ case: base }}
+			<base href="{{ base }}">
+			{{ /case: base }}
+	
+			{{ foreach: meta }}
+			<meta {{ template: conren_attribute_list }}>
+			{{ /foreach: meta }}
+	
+			<!-- {{ foreach: inline-styles }}
+			<style>{{ content }}</style>
+			{{ /foreach: inline-styles }} -->
+	
+			{{ foreach: link }}
+			<link {{ template: conren_attribute_list }}>
+			{{ /foreach: link }}
+	
+			{{ foreach: script-head-extern }}
+			<script {{ template: conren_attribute_list }}></script>
+			{{ /foreach: script-head-extern }}
+	
+			{{ foreach: script-head-inline }}
+			<script>{{ content }}</script>
+			{{ /foreach: script-head-inline }}
+	
+			{{ foreach: custom-elements }}
+				{{ templateSelect: template }}
+			{{ /foreach: custom-elements }}
+		</head>
+		<body>
+			<div id="app" class="app">
+				<main id="page" class="page">
+					{{ foreach: sections }}
+					<section {{ case: key }} id="section-{{ key }}"{{ /case: key }}>
+						{{ templateSelect: template }}
+					</section>
+					{{ /foreach: sections }}
+				</main>
+				
+				<!-- scripts -->
+				{{ foreach: inline-scripts }}
+				<script>{{ content }}</script>
+				{{ /foreach: inline-scripts }}
+				
+				{{ foreach: script-body-extern }}
+				<script {{ template: conren_attribute_list }}></script>
+				{{ /foreach: script-body-extern }}
+			</div>
+		</body>
+	</html>
+</conren_root_login>

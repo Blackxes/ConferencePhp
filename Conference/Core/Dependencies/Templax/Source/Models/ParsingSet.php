@@ -3,7 +3,12 @@
 //_____________________________________________________________________________________________
 /**********************************************************************************************
  * 
- * parsing set model - this one contains information about the following template parse
+ * parsing set model
+ * information set for the template processor function to work with
+ * 
+ * it contains the fundamental values to complete a template parsing without errors
+ * 
+ * when this set is invalid - the processing doesnt start
  * 
  * @author: Alexander Bassov
  * 
@@ -11,93 +16,77 @@
 
 namespace Templax\Source\Models;
 
+require_once( TEMPLAX_ROOT . "/Source/Classes/ParameterBag.php" );
+require_once( TEMPLAX_ROOT . "/Source/Models/BaseProcessSet.php" );
+
+use \Templax\Source\Classes;
+
 //_____________________________________________________________________________________________
-class ParsingSet {
-
-	/**
-	 * contains the source wether its an template instance or a template id
-	 * 
-	 * @var string|\Templax\Source\Models\Template|null (but only before construction)
-	 */
-	public $source;
-
-	/**
-	 * the markup for this parse run
-	 * 
-	 * @var array|null
-	 */
-	public $markup;
-
-	/**
-	 * the options for this parse run
-	 * 
-	 * @var array|null
-	 */
-	public $options;
-
-	/**
-	 * stores the parent process of this template process
-	 * 
-	 * @var null|\Templax\Source\Models\Process
-	 */
-	public $parentProcess;
-
-	/**
-	 * describes wether this parsing set is valid / initially true
-	 * 
-	 * @var boolean
-	 */
-	public $valid = true;
+class ParsingSet extends namespace\BaseProcessSet {
 
 	/**
 	 * construction
 	 * 
-	 * @param
+	 * @param \Templax\Source\Models\ParsingSet|\Templax\Source\Models\Template|string $source
+	 * 	ParsingSet - the parsing set this instance adapts
+	 * 	Template - a template instance
+	 * 	string - template id or value / when id not found in the manager value is interpreted as template value
+	 * @param array|null $markup - the markup for this set
+	 * @param array|null $options - the options for this set
 	 */
-	public function __construct( $source, ?array $markup, ?array $options, namespace\Process $parentProcess = null ) {
-		
-		$this->source = $source;
-		$this->markup = is_null($markup) ? array() : $markup;
-		$this->options = is_null($options) ? array() : $options;
-		$this->parentProcess = $parentProcess;
+	public function __construct( $source, array $markup = array(), array $options = array(), namespace\Process $parentProcess = null ) {
 
-		$this->valid = $this->Init();
+		// use source when its a parsingset else just normally initialize
+		parent::__construct();
+
+		if ( is_a($source, __NAMESPACE__ . "\ParsingSet") )
+			$this->merge( null, $source->all() );
+
+		else {
+
+			$this->merge( null, array(
+				"template" => $this->buildSource($source),
+				"markup" => new Classes\ParameterBag( (array) $markup ),
+				"options" => new Classes\ParameterBag( (array) $options ),
+				"parentProcess" => $parentProcess
+			));
+		}
 	}
 
 	/**
-	 * initializes this parsing set
+	 * validates the source of this parsing set
 	 * 
-	 * @return boolean
+	 * @return boolean - true on valid otherwise false
 	 */
-	public function Init() {
+	private function buildSource( $source ) {
 
-		// when the source is null
-		if ( is_null($this->source) )
-			return false;
-		
-		// it either has to be a string or a template instance
-		//
-		// when string treat either as ..
-		if ( is_string($this->source) ) {
-			
-			// .. a subtemplate with no id but content ..
-			if ( !\Templax\Templax::$tManager->has($this->source) )
-				$this->source = new namespace\Template( null, $this->source );
-			
-			// .. or an existing template id
-			else
-				$this->source = \Templax\Templax::$tManager->get($this->source);
-		}
+		// simple null check
+		if ( is_null($source) )
+			return null;
 
-		// when not even an instance is given its invalid
-		else if ( !is_a($this->source, "\Templax\Source\Models\Template") )
-			return false;
+		// check if its a template instance
+		if ( !is_string($source) && is_a($source, "\Templax\Source\Models\Template") )
+			return $source;
+
+		// if its not empty and registered / get the template
+		if ( \Templax\Templax::$instance->has($source) )
+			return \Templax\Templax::$instance->get($source );
+
+		// otherwise create a new template with the source as value
+		return new namespace\Template( null, $source );
+	}
+
+	/**
+	 * validates this set and returns true on valid otherwise false
+	 * 
+	 * @return boolean - true on valid otherwise false
+	 */
+	public function verify() {
+
+		$template = $this->get( "template" );
 		
-		// when a template instance - validate
-		else
-			return $this->source->validate();
-		
-		return true;
+		// it only depends on the source wether this set is valid or not
+		return !is_null( $template ) || is_a( $template, "\Templax\Source\Models\Template" ) || !$template->verify();
 	}
 }
 

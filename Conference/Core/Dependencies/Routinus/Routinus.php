@@ -39,7 +39,7 @@ namespace Routinus;
 
 const ROUTINUS_ROOT = __DIR__;
 
-require_once( ROUTINUS_ROOT . "/../Logfile/Logfile.php" );
+// require_once( ROUTINUS_ROOT . "/../Logfile/Logfile.php" );
 require_once( ROUTINUS_ROOT . "/Configuration.php" );
 require_once( ROUTINUS_ROOT . "/Source/Models/Route.php" );
 
@@ -64,6 +64,8 @@ class Routinus {
 		$this->routePieces = array_filter( explode( "/", $this->route ) );
 		
 		$this->logfile = new \Logfile\Logfile();
+
+		echo 2;
 	}
 
 	//_________________________________________________________________________________________

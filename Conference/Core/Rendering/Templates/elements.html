@@ -1,0 +1,55 @@
+<!-- simple messaging -->
+<conren_message>
+<div class="container-box container-space-20">
+	<p>{{ message }}</p>
+</div>
+</conren_message>
+
+<!-- the elements attribute list -->
+<conren_attribute_list>
+{{ foreach: attributes }}
+{{ attribute }}="{{ value }}"
+{{ /foreach: attributes }}
+</conren_attribute_list>
+
+<!-- single tag elements -->
+<conren_html_singletag>
+<{{ tag }} {{ template: conren_attribute_list }} />
+</conren_html_singletag>
+
+<!-- multitag element -->
+<conren_html_multitag>
+<{{ tag }} {{ template: conren_attribute_list }}>
+{{ case: elements }}
+	{{ foreach: elements }}
+		{{ templateSelect: template }}
+	{{ foreach: elements }}
+{{ /case: elements }}
+
+{{ case: content }}
+	{{ content }}
+{{ /case: content }}
+</{{ tag }}>
+</conren_html_multitag>
+
+<!-- simple link -->
+<conren_link>
+<div class="">
+	<a class="btn {{ case: type }}btn-{{ type }}{{ /case: type }}" href="{{ link }}">{{ name }}</a>
+</div>
+</conren_link>
+
+<!-- stylesheets -->
+<conren_style>
+<link rel="stylesheet" type="text/css" href="{{ source }}">
+</conren_style>
+
+<!-- script element -->
+<conren_script>
+<script {{ case: source }}src="{{ source }}"{{ /case: source }}>{{ content }}</script>
+</conren_script>
+
+<!-- meta tag -->
+<conren_meta>
+<meta name="{{ name }}" content="{{ content }}">
+</conren_meta>
